@@ -3,6 +3,9 @@ members = [
     "dist",
     "power"
 ]
+exclude = [
+    "src-tauri"
+]
 resolver = "2"
 
 [profile.release]

@@ -29,12 +29,12 @@ public:
         chmod 666 public/pa.wasm
     fi
 
-    cp --verbose index.html public
-    cp --verbose style.css public
-    cp --verbose favicon.png public
-    cp --verbose frontend.js public
-    cp --verbose target/wasm32-unknown-emscripten/release/pa.js public
-    cp --verbose target/wasm32-unknown-emscripten/release/pa.wasm public
+    cp -v index.html public
+    cp -v style.css public
+    cp -v favicon.png public
+    cp -v frontend.js public
+    cp -v target/wasm32-unknown-emscripten/release/pa.js public
+    cp -v target/wasm32-unknown-emscripten/release/pa.wasm public
 
     # To avoid accidentally editing the files in public manually.
     chmod 444 public/index.html
