@@ -47,4 +47,5 @@ jobs:
           releaseBody: 'See the attached native macOS application.'
           releaseDraft: false
           prerelease: false
+          tauriScript: npx tauri
           args: --target aarch64-apple-darwin
