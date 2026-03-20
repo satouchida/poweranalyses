@@ -1,0 +1,50 @@
+name: "Release Native App"
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: macos-14 # Uses Apple Silicon M1 runner natively
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Rust environment
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin, wasm32-unknown-emscripten
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+
+      - name: Setup just compiler
+        uses: extractions/setup-just@v2
+
+      - name: Install Tauri CLI
+        run: npm install -D @tauri-apps/cli@latest
+
+      - name: Build WebAssembly Base
+        run: just build
+
+      - name: Build and Publish Tauri App
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: 'Power Analyses v__VERSION__'
+          releaseBody: 'See the attached native macOS application.'
+          releaseDraft: false
+          prerelease: false
+          args: --target aarch64-apple-darwin
