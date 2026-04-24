@@ -293,7 +293,7 @@ function frontEndState() {
 }
 
 function writeToPtr(ptr, text) {
-    const buffer = Module.HEAPU8.buffer;
+    const buffer = HEAPU8.buffer;
     const view = new Uint8Array(buffer, ptr, 1024);
     const encoder = new TextEncoder();
     const with_stop = text + "<END>";
@@ -301,7 +301,7 @@ function writeToPtr(ptr, text) {
 }
 
 function readFromPtr(ptr) {
-    const buffer = Module.HEAPU8.buffer;
+    const buffer = HEAPU8.buffer;
     const view = new Uint8Array(buffer, ptr, 1024);
     const length = view.findIndex(byte => byte === 0);
     const decoder = new TextDecoder();
