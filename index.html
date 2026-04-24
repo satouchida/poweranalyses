@@ -3,126 +3,109 @@
 
 <head>
   <title>PowerAnalyses.org</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
   <link rel="icon" href="/favicon.png">
   <script src="pa.js"></script>
   <script defer src="frontend.js"></script>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
-  <div class="content">
-    <div class="title center">
-      <img class="favicon" src="/favicon.png" />
-      PowerAnalyses.org Beta
-    </div>
-    <img class="plot center" src=""></img>
+  <div class="app-container">
+    <header class="app-header">
+      <img class="favicon" src="/favicon.png" alt="PowerAnalyses Icon"/>
+      <h1 class="app-title">PowerAnalyses.org <span class="badge">Beta</span></h1>
+    </header>
 
-    <div class="dropdowns border">
-      <label for="family">
-        Test family:<br>
-        <select class="drop-down" id="family" onchange="familyChanged()" name="type">
-          <option disabled value="exact">Exact</option>
-          <option value="f">F tests</option>
-          <option value="t">t tests</option>
-          <option value="chi">χ² tests</option>
-          <option disabled value="z">z tests</option>
-        </select><br>
-      </label>
-      <label for="test">
-        Statistical test:<br>
-        <select class="drop-down" id="test" onchange="updateNumberOutputAreas()" name="type">
-          <option value="1">ANCOVA - Fixed effects, main effects, and interactions</option>
-        </select><br>
-      </label>
-      <label for="analysis">
-        Type of power analysis:<br>
-        <select class="drop-down" id="analysis" onchange="updateNumberOutputAreas()" name="type">
-          <option value="n">Compute required sample size (a priori)</option>
-          <option value="alpha">Compute required α (criterion)</option>
-          <option value="power">Compute achieved power (post hoc)</option>
-          <option value="es">Compute required effect size (sensitivity)</option>
-        </select>
-      </label>
-      <br>
-      <br>
-    </div>
-    <div class="numbers">
-      <div>
-        <table id="input" class="border">
-          <tr>
-            <td>Tail:</td>
-            <td>
-              <select id="tail">
+    <main class="app-content">
+      <section class="m3-card config-card" aria-labelledby="config-heading">
+        <h2 id="config-heading" class="sr-only">Configuration</h2>
+        <div class="m3-form-group">
+          <label for="family">Test family</label>
+          <select class="m3-select" id="family" onchange="familyChanged()" name="type">
+            <option disabled value="exact">Exact</option>
+            <option value="f">F tests</option>
+            <option value="t">t tests</option>
+            <option value="chi">χ² tests</option>
+            <option disabled value="z">z tests</option>
+          </select>
+        </div>
+        <div class="m3-form-group">
+          <label for="test">Statistical test</label>
+          <select class="m3-select" id="test" onchange="updateNumberOutputAreas()" name="type">
+            <option value="1">ANCOVA - Fixed effects, main effects, and interactions</option>
+          </select>
+        </div>
+        <div class="m3-form-group">
+          <label for="analysis">Type of power analysis</label>
+          <select class="m3-select" id="analysis" onchange="updateNumberOutputAreas()" name="type">
+            <option value="n">Compute required sample size (a priori)</option>
+            <option value="alpha">Compute required α (criterion)</option>
+            <option value="power">Compute achieved power (post hoc)</option>
+            <option value="es">Compute required effect size (sensitivity)</option>
+          </select>
+        </div>
+      </section>
+
+      <div class="io-grid">
+        <section class="m3-card input-card" aria-labelledby="input-heading">
+          <h2 id="input-heading" class="card-title">Input Parameters</h2>
+          <div id="input" class="m3-input-list">
+            <div class="m3-input-row">
+              <label for="tail">Tail(s):</label>
+              <select class="m3-select" id="tail" onchange="updateOutput()">
                 <option value="1">One tail</option>
                 <option value="2">Two tails</option>
               </select>
-            </td>
-          </tr>
-        </table>
-        <div class="output border">
-          <table id="output" class="center">
-            <tbody class="center">
-              <tr>
-                <td>Sample size:</td>
-                <td class="result">
-                  <input id="n" type="number" value="100" min="2" max="99999" step="5" onchange="updateOutput()"
-                    disabled>
-                </td>
-              </tr>
-              <tr>
-                <td>α err prob:</td>
-                <td class="result">
-                  <input id="alpha" type="number" value="0.05" min="0.01" max="0.99" step="0.01"
-                    onchange="updateOutput()">
-                </td>
-              </tr>
-              <tr>
-                <td>Power (1-β err prob):</td>
-                <td class="result">
-                  <input id="power" type="number" value="0.95" min="0" max="0.99" step="0.01" onchange="updateOutput()">
-                </td>
-              </tr>
-              <tr>
-                <td>Effect size:</td>
-                <td class="result">
-                  <input id="es" type="number" value="0.5" min="0" max="100" step="0.05" onchange="updateOutput()">
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <div id="error" class="center error">
+            </div>
           </div>
-          <div class="center">
-            <button onclick="resetOutput()" class="resetBtn">Reset</button>
-            <button onclick="updateOutput()" class="calculateBtn">Calculate</button>
+        </section>
+
+        <section class="m3-card output-card" aria-labelledby="output-heading">
+          <h2 id="output-heading" class="card-title">Results</h2>
+          <div id="output" class="m3-input-list">
+            <div class="m3-input-row">
+              <label for="n">Sample size:</label>
+              <input class="m3-input result" id="n" type="number" value="100" min="2" max="99999" step="5" onchange="updateOutput()" disabled>
+            </div>
+            <div class="m3-input-row">
+              <label for="alpha">α err prob:</label>
+              <input class="m3-input result" id="alpha" type="number" value="0.05" min="0.01" max="0.99" step="0.01" onchange="updateOutput()">
+            </div>
+            <div class="m3-input-row">
+              <label for="power">Power (1-β err prob):</label>
+              <input class="m3-input result" id="power" type="number" value="0.95" min="0" max="0.99" step="0.01" onchange="updateOutput()">
+            </div>
+            <div class="m3-input-row">
+              <label for="es">Effect size:</label>
+              <input class="m3-input result" id="es" type="number" value="0.5" min="0" max="100" step="0.05" onchange="updateOutput()">
+            </div>
           </div>
-        </div>
+          
+          <div id="error" class="error-message" aria-live="polite"></div>
+          
+          <div class="action-buttons">
+            <button onclick="resetOutput()" class="m3-button m3-button--tonal">Reset</button>
+            <button onclick="updateOutput()" class="m3-button m3-button--filled">Calculate</button>
+          </div>
+        </section>
       </div>
-    </div>
-    <br>
-    <br>
-    <br>
-    <div style="font-size: 1rem">
-      <center><b>Why this web site?</b></center><br>
-      Statistical power analyses play a key role in science.
-      However, the code for these tools isn't always public.
-      This project shares the code along with the tool, so that people can verify the code and improve it.
-    </div>
-    <br>
-    <br>
-    <br>
-    <div class="center footer">
-      PowerAnalyses.org version <VERSION>.
-        If you find a bug, please open an issue on <a
-          href="https://github.com/poweranalyses-org/poweranalyses">GitHub</a>.
-        This site was made possible thanks to the
-        <a
-          href="https://www.psychologie.hhu.de/arbeitsgruppen/allgemeine-psychologie-und-arbeitspsychologie/gpower.html">G*Power</a>
-        and
-        <a href="https://github.com/heliosdrm/pwr">pwr</a> projects.
-    </div>
+      
+      <section class="m3-card info-card">
+        <h3 class="info-title">Why this web site?</h3>
+        <p>Statistical power analyses play a key role in science. However, the code for these tools isn't always public. This project shares the code along with the tool, so that people can verify the code and improve it.</p>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>PowerAnalyses.org version <VERSION>.</p>
+      <p>If you find a bug, please open an issue on <a class="m3-link" href="https://github.com/poweranalyses-org/poweranalyses">GitHub</a>.</p>
+      <p>This site was made possible thanks to the <a class="m3-link" href="https://www.psychologie.hhu.de/arbeitsgruppen/allgemeine-psychologie-und-arbeitspsychologie/gpower.html">G*Power</a> and <a class="m3-link" href="https://github.com/heliosdrm/pwr">pwr</a> projects.</p>
+    </footer>
   </div>
 </body>
 

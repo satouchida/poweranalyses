@@ -86,20 +86,27 @@ function familyChanged() {
     return;
 }
 
-function removeAllTableRows(table) {
-    while (table.rows.length > 0) {
-        table.deleteRow(0);
-    }
+function removeAllTableRows(container) {
+    container.innerHTML = '';
 }
 
-/** Add an option to a table. */
-function addTableOption(table, description, element) {
-    var row = table.insertRow(table.rows.length);
-    var left = row.insertCell(0);
-    // Using innerHTML over textContent to allow formatting such as italic.
-    left.innerHTML = description.concat(":");
-    var right = row.insertCell(1);
-    right.innerHTML = element;
+/** Add an option to an input list. */
+function addTableOption(container, description, element) {
+    // Inject the M3 class if the element is an input or select that doesn't have it
+    let styledElement = element;
+    if (element.includes('<input') && !element.includes('class=')) {
+        styledElement = element.replace('<input', '<input class="m3-input"');
+    } else if (element.includes('<select') && !element.includes('class=')) {
+        styledElement = element.replace('<select', '<select class="m3-select"');
+    }
+
+    const rowHTML = `
+      <div class="m3-input-row">
+        <label>${description}:</label>
+        ${styledElement}
+      </div>
+    `;
+    container.insertAdjacentHTML('beforeend', rowHTML);
     return null;
 }
 
