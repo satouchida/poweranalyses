@@ -54,18 +54,3 @@ jobs:
           path: './public'
           retention-days: '1'
 
-  deploy:
-    # Separate step to keep the permissions separated.
-    needs: build
-    if: ${{ github.event_name != 'pull_request' }}
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
