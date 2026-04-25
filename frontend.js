@@ -319,6 +319,141 @@ function readFromPtr(ptr) {
     return decoder.decode(new Uint8Array(buffer, ptr, length));
 }
 
+function calculateFromState(state) {
+    const json = JSON.stringify(state);
+    const ptr = Module._alloc();
+    writeToPtr(ptr, json);
+    Module._calculatePower(ptr);
+    const returned = readFromPtr(ptr);
+    Module._dealloc(ptr);
+    return JSON.parse(returned);
+}
+
+let powerChart = null;
+
+function updateChart() {
+    if (!window.Chart) return; // Chart.js not loaded yet
+
+    const xAxisVar = readString("chartXAxis");
+    const state = frontEndState();
+    state.analysis = "power"; // We always calculate power for the Y axis
+    
+    let labels = [];
+    let data = [];
+    let xAxisLabel = "";
+
+    if (xAxisVar === "n") {
+        xAxisLabel = "Sample Size";
+        let currentN = n();
+        if (isNaN(currentN) || currentN <= 0) currentN = 100;
+        
+        let minN = Math.max(2, Math.floor(currentN * 0.2));
+        let maxN = Math.floor(currentN * 2.5);
+        let step = Math.max(1, Math.floor((maxN - minN) / 40));
+        
+        for (let i = minN; i <= maxN; i += step) {
+            let tempState = Object.assign({}, state, { n: i });
+            let result = calculateFromState(tempState);
+            if (result && result.power !== undefined && result.power !== -111 && result.power !== -111.0) {
+                labels.push(i);
+                data.push(result.power);
+            }
+        }
+    } else if (xAxisVar === "es") {
+        xAxisLabel = "Effect Size";
+        let currentEs = es();
+        if (isNaN(currentEs) || currentEs <= 0) currentEs = 0.5;
+        
+        let minEs = Math.max(0.01, currentEs * 0.2);
+        let maxEs = currentEs * 2.5;
+        let step = (maxEs - minEs) / 40;
+        
+        for (let i = minEs; i <= maxEs; i += step) {
+            let tempState = Object.assign({}, state, { es: i });
+            let result = calculateFromState(tempState);
+            if (result && result.power !== undefined && result.power !== -111 && result.power !== -111.0) {
+                labels.push(i.toFixed(3));
+                data.push(result.power);
+            }
+        }
+    }
+
+    const ctx = document.getElementById('powerChart').getContext('2d');
+    
+    if (powerChart) {
+        powerChart.data.labels = labels;
+        powerChart.data.datasets[0].data = data;
+        powerChart.options.scales.x.title.text = xAxisLabel;
+        powerChart.update();
+    } else {
+        powerChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Power',
+                    data: data,
+                    borderColor: 'var(--md-sys-color-primary, #0061A4)',
+                    backgroundColor: 'var(--md-sys-color-primary-container, rgba(0, 97, 164, 0.1))',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 0,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: xAxisLabel,
+                            color: 'var(--md-sys-color-on-surface)'
+                        },
+                        ticks: {
+                            color: 'var(--md-sys-color-on-surface)'
+                        },
+                        grid: {
+                            color: 'var(--md-sys-color-outline-variant)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Power (1 - β)',
+                            color: 'var(--md-sys-color-on-surface)'
+                        },
+                        ticks: {
+                            color: 'var(--md-sys-color-on-surface)'
+                        },
+                        grid: {
+                            color: 'var(--md-sys-color-outline-variant)'
+                        },
+                        min: 0,
+                        max: 1.05
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        });
+    }
+}
+
 /** Update the output area by calculating the numbers via WebAssembly. */
 function updateOutput() {
     setError("");
@@ -332,15 +467,14 @@ function updateOutput() {
     const json = JSON.stringify(state);
     console.log(`Sending the following json to the back end: ${json}`);
 
-    const ptr = Module._alloc();
-    writeToPtr(ptr, json);
-    Module._calculatePower(ptr);
-    const returned = readFromPtr(ptr);
-    Module._dealloc(ptr);
-    console.log(`Received the following json from the back end: ${returned}`);
-    const result = JSON.parse(returned);
+    const result = calculateFromState(state);
+    
+    console.log(`Received the following json from the back end: ${JSON.stringify(result)}`);
     const id = Object.keys(result)[0];
     setOutput(id, result[id]);
+
+    // Update the chart to reflect the new state
+    updateChart();
 
     return null;
 }

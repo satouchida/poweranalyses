@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="public/pa.js"></script>
+<script src="public/frontend.js"></script>
+</head>
+<body>
+  <div id="input"></div>
+  <select id="family"><option value="f">f</option></select>
+  <select id="test"><option value="ANCOVA">ANCOVA</option></select>
+  <select id="analysis"><option value="n">n</option></select>
+  <input id="n" value="100">
+  <input id="alpha" value="0.05">
+  <input id="power" value="0.95">
+  <input id="es" value="0.5">
+  <select id="chartXAxis"><option value="n">n</option></select>
+  <div id="error"></div>
+  <canvas id="powerChart"></canvas>
+  <script>
+    Module['onRuntimeInitialized'] = function() {
+        console.log("WASM loaded");
+        familyChanged();
+        updateNumberOutputAreas();
+        updateOutput();
+        console.log("Labels:", powerChart.data.labels);
+        console.log("Data:", powerChart.data.datasets[0].data);
+    };
+  </script>
+</body>
+</html>

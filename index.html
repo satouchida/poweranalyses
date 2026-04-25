@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="/style.css">
   <link rel="icon" href="/favicon.png">
   <script src="pa.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script defer src="frontend.js"></script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -94,6 +95,20 @@
           </div>
         </section>
       </div>
+
+      <section class="m3-card chart-card" aria-labelledby="chart-heading">
+        <h2 id="chart-heading" class="card-title">Power Curve</h2>
+        <div class="m3-form-group chart-controls">
+          <label for="chartXAxis">X-Axis:</label>
+          <select class="m3-select" id="chartXAxis" onchange="updateChart()">
+            <option value="n">Sample Size</option>
+            <option value="es">Effect Size</option>
+          </select>
+        </div>
+        <div class="chart-container" style="position: relative; height:300px; width:100%">
+          <canvas id="powerChart"></canvas>
+        </div>
+      </section>
       
       <section class="m3-card info-card">
         <h3 class="info-title">Why this web site?</h3>

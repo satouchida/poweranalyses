@@ -169,6 +169,19 @@ body {
   color: var(--md-sys-color-on-surface);
 }
 
+/* Chart Card */
+.chart-card {
+  align-items: center;
+}
+
+.chart-controls {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 300px;
+}
+
 /* Forms & Inputs */
 .m3-form-group {
   display: flex;
