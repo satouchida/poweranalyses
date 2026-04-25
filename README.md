@@ -51,7 +51,7 @@ $ cargo watch -x "test"
 
 ### 🔴 High Priority (Core Functionality)
 - [ ] **Interactive Power Curves & Visualizations:** Interactive plots (i.e., Power vs. Sample Size).
-- [ ] **Export & Reporting Tools:** "Export as PDF" or copy boilerplate text.
+- [ ] **Export & Reporting Tools:** "Export as CSV/TSV" and "Copy table" options for the results.
 
 ### 🟡 Medium Priority (UX & Architecture)
 - [ ] **Implement Accessibility Guidelines:** Make the app more accessible to users with disabilities.

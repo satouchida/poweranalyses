@@ -394,7 +394,7 @@ function updateChart() {
                     label: 'Power',
                     data: data,
                     borderColor: 'var(--md-sys-color-primary, #0061A4)',
-                    backgroundColor: 'var(--md-sys-color-primary-container, rgba(0, 97, 164, 0.1))',
+                    backgroundColor: 'var(--chart-fill-color, rgba(0, 97, 164, 0.15))',
                     borderWidth: 2,
                     fill: true,
                     tension: 0.4,
@@ -486,6 +486,77 @@ function resetOutput() {
     setFloat("power", 0.95);
     setFloat("es", 0.5);
     updateOutput();
+}
+
+function getFormattedResults() {
+    const familySelect = getElementById("family");
+    const testSelect = getElementById("test");
+    const analysisSelect = getElementById("analysis");
+    
+    let rows = [];
+    rows.push(["Parameter", "Value"]);
+    if (familySelect.selectedIndex >= 0) rows.push(["Test family", familySelect.options[familySelect.selectedIndex].text]);
+    if (testSelect.selectedIndex >= 0) rows.push(["Statistical test", testSelect.options[testSelect.selectedIndex].text]);
+    if (analysisSelect.selectedIndex >= 0) rows.push(["Type of power analysis", analysisSelect.options[analysisSelect.selectedIndex].text]);
+    
+    const inputRows = document.querySelectorAll("#input .m3-input-row");
+    inputRows.forEach(row => {
+        const labelElem = row.querySelector("label");
+        const inputElem = row.querySelector("input, select");
+        if (labelElem && inputElem) {
+            const label = labelElem.innerText.replace(":", "").trim();
+            let val = inputElem.value;
+            if (inputElem.tagName === "SELECT" && inputElem.selectedIndex >= 0) {
+                val = inputElem.options[inputElem.selectedIndex].text;
+            }
+            rows.push([label, val]);
+        }
+    });
+    
+    const outputRows = document.querySelectorAll("#output .m3-input-row");
+    outputRows.forEach(row => {
+        const labelElem = row.querySelector("label");
+        const inputElem = row.querySelector("input");
+        if (labelElem && inputElem) {
+            const label = labelElem.innerText.replace(":", "").trim();
+            rows.push([label, inputElem.value]);
+        }
+    });
+    
+    return rows;
+}
+
+function copyResultsTable(btn) {
+    const rows = getFormattedResults();
+    const tsvString = rows.map(row => row.join("\t")).join("\n");
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(tsvString).then(() => {
+            const originalText = btn.innerText;
+            btn.innerText = "Copied!";
+            setTimeout(() => { btn.innerText = originalText; }, 2000);
+        }).catch(err => {
+            console.error("Failed to copy text: ", err);
+        });
+    } else {
+        console.warn("Clipboard API not available. Cannot copy.");
+    }
+}
+
+function exportResultsCSV() {
+    const rows = getFormattedResults();
+    const csvString = rows.map(row => 
+        row.map(val => `"${String(val).replace(/"/g, '""')}"`).join(",")
+    ).join("\n");
+    
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "power_analysis_results.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 function webAssemblySupport() {

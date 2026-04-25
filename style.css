@@ -21,6 +21,8 @@
   --md-sys-color-error: #BA1A1A;
   --md-sys-color-on-error: #FFFFFF;
 
+  --chart-fill-color: rgba(0, 97, 164, 0.15);
+
   --border-radius-sm: 8px;
   --border-radius-md: 12px;
   --border-radius-lg: 16px;
@@ -52,6 +54,8 @@
     
     --md-sys-color-error: #FFB4AB;
     --md-sys-color-on-error: #690005;
+
+    --chart-fill-color: rgba(158, 202, 255, 0.15);
     
     --shadow-elevation-1: 0 1px 2px 0 rgba(0,0,0,0.5), 0 1px 3px 1px rgba(0,0,0,0.3);
   }
