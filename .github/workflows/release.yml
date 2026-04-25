@@ -6,10 +6,21 @@ on:
       - 'v*'
 
 jobs:
-  release:
+  release-desktop:
     permissions:
       contents: write
-    runs-on: macos-14 # Uses Apple Silicon M1 runner natively
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-14
+            target: aarch64-apple-darwin
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+          - platform: windows-latest
+            target: aarch64-pc-windows-msvc
+            
+    runs-on: ${{ matrix.platform }}
 
     steps:
       - name: Checkout repository
@@ -23,7 +34,7 @@ jobs:
       - name: Setup Rust environment
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: aarch64-apple-darwin, wasm32-unknown-emscripten
+          targets: ${{ matrix.target }}, wasm32-unknown-emscripten
 
       - name: Setup Emscripten
         uses: mymindstorm/setup-emsdk@v14
@@ -44,8 +55,74 @@ jobs:
         with:
           tagName: v__VERSION__
           releaseName: 'Power Analyses v__VERSION__'
-          releaseBody: 'See the attached native macOS application.'
+          releaseBody: 'See the attached native application.'
           releaseDraft: false
           prerelease: false
           tauriScript: npx tauri
-          args: --target aarch64-apple-darwin
+          args: --target ${{ matrix.target }}
+
+      - name: Generate and Upload Checksums
+        shell: bash
+        run: |
+          find src-tauri/target/${{ matrix.target }}/release/bundle -type f \( -name "*.dmg" -o -name "*.exe" -o -name "*.msi" \) -exec sh -c 'sha256sum "$1" > "$1.sha256"' _ {} \;
+        
+      - name: Upload Desktop Checksums
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.sha256
+
+  release-android:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Rust environment
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, armv7-linux-androideabi, i686-linux-android, x86_64-linux-android, wasm32-unknown-emscripten
+
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v14
+
+      - name: Setup just compiler
+        uses: extractions/setup-just@v2
+
+      - name: Install Tauri CLI
+        run: npm install -D @tauri-apps/cli@latest
+
+      - name: Build WebAssembly Base
+        run: just build
+
+      - name: Build Android App
+        run: npx tauri android build --apk
+
+      - name: Generate Checksum
+        run: |
+          find src-tauri/gen/android/app/build/outputs/apk -name "*.apk" -exec sh -c 'sha256sum "$1" > "$1.sha256"' _ {} \;
+
+      - name: Upload Android App and Checksums
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            src-tauri/gen/android/app/build/outputs/apk/**/*.apk
+            src-tauri/gen/android/app/build/outputs/apk/**/*.sha256
