@@ -100,9 +100,12 @@ function addTableOption(container, description, element) {
         styledElement = element.replace('<select', '<select class="m3-select"');
     }
 
+    let idMatch = element.match(/id=['"]([^'"]+)['"]/);
+    let forAttr = idMatch ? ` for="${idMatch[1]}"` : '';
+
     const rowHTML = `
       <div class="m3-input-row">
-        <label>${description}:</label>
+        <label${forAttr}>${description}:</label>
         ${styledElement}
       </div>
     `;
