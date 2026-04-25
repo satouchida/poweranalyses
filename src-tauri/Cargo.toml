@@ -2,7 +2,7 @@
 name = "app"
 version = "0.1.0"
 description = "A Tauri App"
-authors = ["you"]
+authors = ["satouchida", "Gemini 3.1 Pro"]
 license = ""
 repository = ""
 edition = "2021"

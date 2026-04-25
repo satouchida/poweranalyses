@@ -1,7 +1,7 @@
 # PowerAnalyses for Local Environments
 
 ## Important Note
-This is a modified fork of the original poweranalyses.org web application. The core application was created by the original developers, and this repository adapts it into a native macOS application using Tauri. These modifications were made with the assistance of an AI tool (Gemini) for personal use. In accordance with the GNU General Public License v2.0 (GPL-2.0), this modified version and its source code are distributed under the same license terms.
+This is a modified fork of the original poweranalyses.org web application. The core application was created by the original developers, and this repository adapts it into a native macOS application using Tauri. These modifications were co-authored with the Gemini 3.1 Pro for personal use. In accordance with the GNU General Public License v2.0 (GPL-2.0), this modified version and its source code are distributed under the same license terms.
 
 **DISCLAIMER**
 > DO NOT CONTACT THE ORIGINAL DEVELOPER FOR ANY ISSUES REGARDING TO THIS FORK.
