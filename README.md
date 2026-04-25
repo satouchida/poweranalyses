@@ -50,11 +50,10 @@ $ cargo watch -x "test"
 ## Future Plans
 
 ### 🔴 High Priority (Core Functionality)
-- [ ] **Interactive Power Curves & Visualizations:** Interactive plots (Power vs. Sample Size/Effect Size).
+- [ ] **Interactive Power Curves & Visualizations:** Interactive plots (i.e., Power vs. Sample Size).
 - [ ] **Export & Reporting Tools:** "Export as PDF" or copy boilerplate text.
 
 ### 🟡 Medium Priority (UX & Architecture)
-- [ ] **React + TypeScript Migration:** Manage complex form states robustly.
 - [ ] **Implement Accessibility Guidelines:** Make the app more accessible to users with disabilities.
 - [ ] **Internationalization (i18n):** Translate the UI using LLMs.
 
