@@ -30,9 +30,9 @@ jobs:
         run: emcc -v
 
       - name: Setup just
-        uses: extractions/setup-just@v4
+        uses: taiki-e/install-action@v2
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          tool: just
 
       - name: Setup Stable Rust with emscripten target
         run: rustup target add wasm32-unknown-emscripten
