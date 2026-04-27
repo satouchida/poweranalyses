@@ -42,7 +42,9 @@ jobs:
         uses: mymindstorm/setup-emsdk@v14
 
       - name: Setup just compiler
-        uses: extractions/setup-just@v2
+        uses: extractions/setup-just@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Tauri CLI
         run: npm install -D @tauri-apps/cli@latest
@@ -108,7 +110,9 @@ jobs:
         uses: mymindstorm/setup-emsdk@v14
 
       - name: Setup just compiler
-        uses: extractions/setup-just@v2
+        uses: extractions/setup-just@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Tauri CLI
         run: npm install -D @tauri-apps/cli@latest
