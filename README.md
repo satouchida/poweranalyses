@@ -52,6 +52,10 @@ $ cargo watch -x "test"
 ### 🔴 High Priority (Core Functionality)
 - [ ] **Interactive Power Curves & Visualizations:** Interactive plots (i.e., Power vs. Sample Size).
 - [ ] **Export & Reporting Tools:** "Export as CSV/TSV" and "Copy table" options for the results.
+- [ ] **Support for complex statistical models** (e.g., multi-factor mixed ANOVA, ANCOVA, logistic regression)
+- [ ] **Comprehensive analysis modes** (specifically Sensitivity analysis, plus Compromise and Criterion)
+- [ ] **Built-in Effect Size Calculator** (converting descriptive statistics into Cohen's d, f, f², etc.)
+- [ ] **Simulation-based power analyses** (Monte Carlo methods)
 
 ### 🟡 Medium Priority (UX & Architecture)
 - [ ] **Implement Accessibility Guidelines:** Make the app more accessible to users with disabilities.
@@ -60,4 +64,3 @@ $ cargo watch -x "test"
 
 ### 🟢 Low Priority (Advanced Features)
 - [ ] **Dark Mode & Theming Preferences:** Explicit Light/Dark/System toggles.
-- [ ] **Simulation-Based Power Analyses:** Run Monte Carlo simulations.
