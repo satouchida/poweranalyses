@@ -47,20 +47,16 @@ Or use `cargo watch` to run the tests automatically when you make changes.
 $ cargo watch -x "test"
 ```
 
-## Future Plans
+### ✅ Completed Features
+- [x] **Material 3 UI Migration:** Sleek, modern interface with consistent design tokens.
+- [x] **Interactive Power Curves:** Dynamic visualizations using Chart.js.
+- [x] **Monte Carlo Simulation:** Robust simulation engine for empirical power analysis.
+- [x] **Built-in Effect Size Calculator:** Tools for converting various statistics to Cohen's d, f, etc.
+- [x] **Export & Reporting:** CSV/TSV export and "Copy Table" functionality.
+- [x] **Accessibility:** WCAG compliant structure and keyboard navigation.
 
-### 🔴 High Priority (Core Functionality)
-- [ ] **Interactive Power Curves & Visualizations:** Interactive plots (i.e., Power vs. Sample Size).
-- [ ] **Export & Reporting Tools:** "Export as CSV/TSV" and "Copy table" options for the results.
-- [ ] **Support for complex statistical models** (e.g., multi-factor mixed ANOVA, ANCOVA, logistic regression)
-- [ ] **Comprehensive analysis modes** (specifically Sensitivity analysis, plus Compromise and Criterion)
-- [ ] **Built-in Effect Size Calculator** (converting descriptive statistics into Cohen's d, f, f², etc.)
-- [ ] **Simulation-based power analyses** (Monte Carlo methods)
+### 🟡 Future Plans (Medium/Low Priority)
+- [ ] **Dark Mode & Theming:** Support for dark mode with system preference detection.
+- [ ] **Internationalization (i18n):** Multi-language support.
+- [ ] **Advanced Models:** Support for multi-factor mixed models.
 
-### 🟡 Medium Priority (UX & Architecture)
-- [ ] **Implement Accessibility Guidelines:** Make the app more accessible to users with disabilities.
-- [ ] **Internationalization (i18n):** Translate the UI using LLMs.
-
-
-### 🟢 Low Priority (Advanced Features)
-- [ ] **Dark Mode & Theming Preferences:** Explicit Light/Dark/System toggles.
