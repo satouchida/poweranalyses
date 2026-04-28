@@ -1,4 +1,5 @@
 use crate::interface::handle_received;
+use crate::interface::handle_simulation;
 use serde_json::json;
 #[cfg(test)]
 use serde_json::Value;
@@ -82,6 +83,21 @@ fn independent_samples_t_test() {
     test_interface(&join(&extra), 0.398);
     let extra = json!({"tail": "1", "analysis": "n"});
     test_interface(&join(&extra), 88.0);
+}
+
+#[test]
+fn dependent_samples_t_test() {
+    // Paired t-test: same distribution as one-sample t on the differences
+    // pwr.t.test(n=50, d=0.5, sig.level=NULL, power=0.95, type="paired", alternative="less")
+    let join = with_rest("dependentSamplesTTest");
+    let extra = json!({"tail": "1", "analysis": "alpha"});
+    test_interface(&join(&extra), 0.034);
+    let extra = json!({"tail": "2", "analysis": "alpha"});
+    test_interface(&join(&extra), 0.067);
+    let extra = json!({"tail": "1", "analysis": "power"});
+    test_interface(&join(&extra), 0.967);
+    let extra = json!({"tail": "2", "analysis": "power"});
+    test_interface(&join(&extra), 0.934);
 }
 
 #[test]
@@ -314,4 +330,119 @@ fn within_between_repeated_anova_epsilon_error() {
     let join = json!({"n": n, "alpha": ALPHA, "power": POWER, "es": ES, "test": "withinBetweenRepeatedANOVA"});
     let extra = json!({"k": k, "m": m, "rho": rho, "epsilon": epsilon, "analysis": "alpha"});
     test_interface(&join_json(&join, &extra), 0.123);
+}
+
+#[test]
+fn hotellings_one_group_test() {
+    // Hotelling's T² one group: F(p, n-p) with ncp = n * f²
+    let join = with_rest("hotellingsOneGroup");
+    let extra = json!({"p": "3", "analysis": "power"});
+    let text = join(&extra).to_string();
+    let returned = handle_received(&text);
+    let result = returned["power"].as_f64().unwrap();
+    assert!(result > 0.0 && result <= 1.0, "Power should be between 0 and 1, got {}", result);
+}
+
+#[test]
+fn hotellings_two_groups_test() {
+    // Hotelling's T² two groups: F(p, n-p-1) with ncp = (n/2) * f²
+    let join = with_rest("hotellingsTwoGroups");
+    let extra = json!({"p": "3", "analysis": "power"});
+    let text = join(&extra).to_string();
+    let returned = handle_received(&text);
+    let result = returned["power"].as_f64().unwrap();
+    assert!(result > 0.0 && result <= 1.0, "Power should be between 0 and 1, got {}", result);
+}
+
+#[test]
+fn manova_global_effects_test() {
+    // MANOVA global effects: Pillai's trace F-approximation
+    let join = with_rest("manovaGlobalEffects");
+    let extra = json!({"p": "3", "k": "3", "analysis": "power"});
+    let text = join(&extra).to_string();
+    let returned = handle_received(&text);
+    let result = returned["power"].as_f64().unwrap();
+    assert!(result > 0.0 && result <= 1.0, "Power should be between 0 and 1, got {}", result);
+}
+
+#[test]
+fn two_independent_correlations_test() {
+    // z-test for two independent correlations
+    let join = with_rest("twoIndependentCorrelations");
+    let extra = json!({"tail": "2", "analysis": "power"});
+    let text = join(&extra).to_string();
+    let returned = handle_received(&text);
+    let result = returned["power"].as_f64().unwrap();
+    assert!(result > 0.0 && result <= 1.0, "Power should be between 0 and 1, got {}", result);
+}
+
+#[test]
+fn logistic_regression_test() {
+    // z-test for logistic regression
+    // Effect size is odds ratio, so use a meaningful OR like 2.0
+    let base = json!({
+        "n": 100.0,
+        "alpha": ALPHA,
+        "power": POWER,
+        "es": 2.0,
+        "test": "logisticRegression",
+        "p0": "0.5",
+        "r2": "0.0",
+        "tail": "2",
+        "analysis": "power"
+    });
+    let text = base.to_string();
+    let returned = handle_received(&text);
+    let result = returned["power"].as_f64().unwrap();
+    assert!(result > 0.0 && result <= 1.0, "Power should be between 0 and 1, got {}", result);
+}
+
+#[test]
+fn compromise_analysis_test() {
+    // Compromise analysis: find alpha and power given beta/alpha ratio
+    let base = json!({
+        "n": N,
+        "alpha": ALPHA,
+        "power": POWER,
+        "es": ES,
+        "test": "oneSampleTTest",
+        "tail": "2",
+        "analysis": "compromise",
+        "betaAlphaRatio": "1.0"
+    });
+    let text = base.to_string();
+    let returned = handle_received(&text);
+    let alpha = returned["alpha"].as_f64().unwrap();
+    let power = returned["power"].as_f64().unwrap();
+    assert!(alpha > 0.0 && alpha < 1.0, "Alpha should be between 0 and 1, got {}", alpha);
+    assert!(power > 0.0 && power < 1.0, "Power should be between 0 and 1, got {}", power);
+    // With q=1, beta should approximately equal alpha
+    let beta = 1.0 - power;
+    assert!((beta / alpha - 1.0).abs() < 0.1, "Beta/alpha ratio should be ~1.0, got {}", beta / alpha);
+}
+
+#[test]
+fn simulation_test() {
+    // Monte Carlo simulation should converge to analytical power
+    let base = json!({
+        "n": N,
+        "alpha": ALPHA,
+        "es": ES,
+        "test": "oneSampleTTest",
+        "tail": "2",
+        "nSim": 5000,
+        "seed": 42
+    });
+    let text = base.to_string();
+    let returned = handle_simulation(&text);
+    let emp_power = returned["empiricalPower"].as_f64().unwrap();
+    // Analytical power for this configuration is ~0.934
+    assert!(
+        (emp_power - 0.934).abs() < 0.05,
+        "Empirical power {} should be within 5% of analytical power 0.934",
+        emp_power
+    );
+    // Check histogram is present
+    let histogram = returned["histogram"].as_array().unwrap();
+    assert_eq!(histogram.len(), 20);
 }

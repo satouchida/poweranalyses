@@ -32,7 +32,7 @@
             <option value="f">F tests</option>
             <option value="t">t tests</option>
             <option value="chi">χ² tests</option>
-            <option disabled value="z">z tests</option>
+            <option value="z">z tests</option>
           </select>
         </div>
         <div class="m3-form-group">
@@ -48,6 +48,7 @@
             <option value="alpha">Compute required α (criterion)</option>
             <option value="power">Compute achieved power (post hoc)</option>
             <option value="es">Compute required effect size (sensitivity)</option>
+            <option value="compromise">Compromise: Compute α & power</option>
           </select>
         </div>
       </section>
@@ -85,6 +86,10 @@
               <label for="es">Effect size:</label>
               <input class="m3-input result" id="es" type="number" value="0.5" min="0" max="100" step="0.05" onchange="updateOutput()">
             </div>
+            <div class="m3-input-row" id="betaAlphaRow" style="display:none;">
+              <label for="betaAlphaRatio">β/α ratio:</label>
+              <input class="m3-input result" id="betaAlphaRatio" type="number" value="1.0" min="0.01" max="100" step="0.1" onchange="updateOutput()">
+            </div>
           </div>
           
           <div id="error" class="error-message" aria-live="polite"></div>
@@ -92,6 +97,7 @@
           <div class="action-buttons">
             <button onclick="copyResultsTable(this)" class="m3-button m3-button--tonal" style="margin-right: auto;">Copy Results</button>
             <button onclick="exportResultsCSV()" class="m3-button m3-button--tonal">Export CSV</button>
+            <button onclick="exportResultsTSV()" class="m3-button m3-button--tonal">Export TSV</button>
             <button onclick="resetOutput()" class="m3-button m3-button--tonal">Reset</button>
             <button onclick="updateOutput()" class="m3-button m3-button--filled">Calculate</button>
           </div>
@@ -100,16 +106,101 @@
 
       <section class="m3-card chart-card" aria-labelledby="chart-heading">
         <h2 id="chart-heading" class="card-title">Power Curve</h2>
-        <div class="m3-form-group chart-controls">
-          <label for="chartXAxis">X-Axis:</label>
-          <select class="m3-select" id="chartXAxis" onchange="updateChart()">
-            <option value="n">Sample Size</option>
-            <option value="es">Effect Size</option>
-          </select>
+        <div class="chart-controls-row">
+          <div class="m3-form-group chart-controls">
+            <label for="chartXAxis">X-Axis:</label>
+            <select class="m3-select" id="chartXAxis" onchange="updateChart()">
+              <option value="n">Sample Size</option>
+              <option value="es">Effect Size</option>
+              <option value="alpha">Alpha (α)</option>
+            </select>
+          </div>
+          <button onclick="exportChartPNG()" class="m3-button m3-button--tonal">Export Chart</button>
         </div>
         <div class="chart-container" style="position: relative; height:300px; width:100%">
           <canvas id="powerChart"></canvas>
         </div>
+      </section>
+
+      <!-- Effect Size Calculator -->
+      <section class="m3-card" aria-labelledby="es-calc-heading">
+        <details id="esCalcDetails">
+          <summary class="card-title clickable-title">
+            <h2 id="es-calc-heading" style="display:inline; font-size:1.125rem; font-weight:600; margin:0;">Effect Size Calculator</h2>
+          </summary>
+          <div class="es-calc-content">
+            <div class="m3-form-group" style="margin-top:16px;">
+              <label for="esCalcType">Conversion type</label>
+              <select class="m3-select" id="esCalcType" onchange="updateEsCalcInputs()">
+                <option value="d_means">Cohen's d from two group means</option>
+                <option value="d_t">Cohen's d from t-statistic</option>
+                <option value="d_one_sample">Cohen's d from one-sample mean</option>
+                <option value="f_eta2">Cohen's f from η² (partial eta-squared)</option>
+                <option value="f2_r2">Cohen's f² from R²</option>
+                <option value="f2_delta_r2">Cohen's f² from ΔR²</option>
+                <option value="w_proportions">Cohen's w from proportions</option>
+                <option value="or_2x2">Odds ratio from 2×2 table</option>
+              </select>
+            </div>
+            <div id="esCalcInputs" class="m3-input-list" style="margin-top:12px;"></div>
+            <div class="m3-input-row" style="margin-top:12px;">
+              <label><strong>Result:</strong></label>
+              <span id="esCalcResult" class="result" style="font-size:1.1rem;">—</span>
+            </div>
+            <div class="action-buttons" style="margin-top:12px;">
+              <button onclick="useEsCalcResult()" class="m3-button m3-button--filled">Use this value</button>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <!-- Monte Carlo Simulation -->
+      <section class="m3-card" aria-labelledby="sim-heading">
+        <details id="simDetails">
+          <summary class="card-title clickable-title">
+            <h2 id="sim-heading" style="display:inline; font-size:1.125rem; font-weight:600; margin:0;">Monte Carlo Simulation</h2>
+          </summary>
+          <div class="sim-content">
+            <div class="m3-input-list" style="margin-top:16px;">
+              <div class="m3-input-row">
+                <label for="nSim">Number of simulations:</label>
+                <input class="m3-input" id="nSim" type="number" value="10000" min="100" max="100000" step="1000">
+              </div>
+              <div class="m3-input-row">
+                <label for="simSeed">Random seed:</label>
+                <input class="m3-input" id="simSeed" type="number" value="42" min="1" max="999999" step="1">
+              </div>
+            </div>
+            <div class="action-buttons" style="margin-top:12px;">
+              <button id="runSimBtn" onclick="runSimulation()" class="m3-button m3-button--filled">Run Simulation</button>
+            </div>
+            <div id="simProgress" class="sim-progress" style="display:none;">
+              <div class="sim-progress-bar"><div class="sim-progress-fill"></div></div>
+              <span class="sim-progress-text">Running...</span>
+            </div>
+            <div id="simResults" style="display:none; margin-top:16px;">
+              <div class="m3-input-row">
+                <label>Analytical power:</label>
+                <span id="simAnalyticalPower" class="result">—</span>
+              </div>
+              <div class="m3-input-row">
+                <label>Empirical power:</label>
+                <span id="simEmpiricalPower" class="result">—</span>
+              </div>
+              <div class="m3-input-row">
+                <label>Simulations:</label>
+                <span id="simCount">—</span>
+              </div>
+              <div class="m3-input-row">
+                <label>Seed:</label>
+                <span id="simSeedUsed">—</span>
+              </div>
+              <div class="chart-container" style="position:relative; height:200px; width:100%; margin-top:12px;">
+                <canvas id="pValueChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </details>
       </section>
       
       <section class="m3-card info-card">

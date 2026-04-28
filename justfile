@@ -22,6 +22,9 @@ public:
     if [ -f public/frontend.js ]; then
         chmod 666 public/frontend.js
     fi
+    if [ -f public/simulation_worker.js ]; then
+        chmod 666 public/simulation_worker.js
+    fi
     if [ -f public/pa.js ]; then
         chmod 666 public/pa.js
     fi
@@ -33,6 +36,7 @@ public:
     cp -v style.css public
     cp -v favicon.png public
     cp -v frontend.js public
+    cp -v simulation_worker.js public
     cp -v target/wasm32-unknown-emscripten/release/pa.js public
     cp -v target/wasm32-unknown-emscripten/release/pa.wasm public
 
@@ -40,6 +44,7 @@ public:
     chmod 444 public/index.html
     chmod 444 public/style.css
     chmod 444 public/frontend.js
+    chmod 444 public/simulation_worker.js
     chmod 444 public/pa.js
     chmod 444 public/pa.wasm
 
@@ -75,7 +80,7 @@ serve:
     # Or via Nix, install nodePackages_latest.live-server.
     cd public && live-server --no-browser & SERVER_PID=$!
     
-    find dist power index.html style.css frontend.js Cargo.toml | entr -s "just --justfile {{justfile()}} build"
+    find dist power index.html style.css frontend.js simulation_worker.js Cargo.toml | entr -s "just --justfile {{justfile()}} build"
 
     # Kill the server when the script exits
     trap "kill $SERVER_PID" EXIT

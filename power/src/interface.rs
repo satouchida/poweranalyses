@@ -11,6 +11,7 @@ enum Analysis {
     Alpha,
     Power,
     ES,
+    Compromise,
 }
 
 impl Analysis {
@@ -20,6 +21,7 @@ impl Analysis {
             "alpha" => Ok(Analysis::Alpha),
             "power" => Ok(Analysis::Power),
             "es" => Ok(Analysis::ES),
+            "compromise" => Ok(Analysis::Compromise),
             _ => Err(format!("Unknown analysis: {}", text)),
         }
     }
@@ -93,12 +95,55 @@ pub fn handle_received(text: &str) -> Value {
             let es = round(test.es(tail, recv.n, recv.alpha, recv.power), 3);
             json!({"es": es})
         }
+        Analysis::Compromise => {
+            let beta_alpha_ratio = match data.get("betaAlphaRatio") {
+                Some(v) => v.as_str().unwrap_or("1.0").parse::<f64>().unwrap_or(1.0),
+                None => 1.0,
+            };
+            let (alpha, power) = test.compromise(tail, recv.n, recv.es, beta_alpha_ratio);
+            json!({
+                "alpha": round(alpha, 4),
+                "power": round(power, 4),
+                "compromise": true
+            })
+        }
     }
+}
+
+/// Handle Monte Carlo simulation requests.
+pub fn handle_simulation(text: &str) -> Value {
+    let data: Value = json(text).unwrap();
+    let test = TestKind::from_str(data["test"].as_str().unwrap(), &data).unwrap();
+    let tail = match data.get("tail") {
+        Some(_) => Tail::from_json(&data).unwrap(),
+        None => Tail::OneSided,
+    };
+    let n = data["n"].as_f64().unwrap();
+    let alpha = data["alpha"].as_f64().unwrap();
+    let es = data["es"].as_f64().unwrap();
+    let n_sim = data["nSim"].as_u64().unwrap_or(1000);
+    let seed = data["seed"].as_u64().unwrap_or(42);
+
+    let (empirical_power, histogram) = test.simulate_power(tail, n, alpha, es, n_sim, seed);
+
+    json!({
+        "empiricalPower": round(empirical_power, 4),
+        "histogram": histogram,
+        "nSim": n_sim,
+        "seed": seed
+    })
 }
 
 #[no_mangle]
 pub extern "C" fn calculatePower(ptr: *mut u8) {
     let text = unsafe { u8_to_string(ptr) };
     let result = handle_received(&text);
+    write_to_ptr(ptr, &result.to_string());
+}
+
+#[no_mangle]
+pub extern "C" fn simulatePower(ptr: *mut u8) {
+    let text = unsafe { u8_to_string(ptr) };
+    let result = handle_simulation(&text);
     write_to_ptr(ptr, &result.to_string());
 }

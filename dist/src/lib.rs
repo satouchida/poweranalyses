@@ -11,6 +11,9 @@ extern "C" {
 
     fn pnchisq(x: f64, df: f64, ncp: f64, lower_tail: i32, log_p: i32) -> f64;
     fn qnchisq(p: f64, df: f64, ncp: f64, lower_tail: i32, log_p: i32) -> f64;
+
+    fn pnorm5(x: f64, mu: f64, sigma: f64, lower_tail: i32, log_p: i32) -> f64;
+    fn qnorm5(p: f64, mu: f64, sigma: f64, lower_tail: i32, log_p: i32) -> f64;
 }
 
 pub trait Distribution {
@@ -126,6 +129,36 @@ impl Distribution for NoncentralChisq {
         let mut clone = self.clone();
         clone.lambda = 0.0;
         Box::new(clone)
+    }
+}
+
+/// Implements the normal distribution with mean `mu` and standard deviation `sigma`.
+#[derive(Clone)]
+pub struct NormalDist {
+    pub mu: f64,
+    pub sigma: f64,
+}
+
+impl NormalDist {
+    pub fn new(mu: f64, sigma: f64) -> Self {
+        Self { mu, sigma }
+    }
+
+    /// Standard normal distribution (mu=0, sigma=1).
+    pub fn standard() -> Self {
+        Self { mu: 0.0, sigma: 1.0 }
+    }
+}
+
+impl Distribution for NormalDist {
+    fn cdf(&self, x: f64, lower_tail: bool) -> f64 {
+        unsafe { pnorm5(x, self.mu, self.sigma, lower_tail as i32, 0) }
+    }
+    fn quantile(&self, x: f64, lower_tail: bool) -> f64 {
+        unsafe { qnorm5(x, self.mu, self.sigma, lower_tail as i32, 0) }
+    }
+    fn central_distribution(&self) -> Dist {
+        Box::new(NormalDist::standard())
     }
 }
 
