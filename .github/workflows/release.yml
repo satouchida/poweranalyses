@@ -124,7 +124,7 @@ jobs:
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 --decode > src-tauri/gen/android/upload-keystore.jks
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -di > src-tauri/gen/android/upload-keystore.jks
 
       - name: Create keystore.properties
         env:
