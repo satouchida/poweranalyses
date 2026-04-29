@@ -65,10 +65,23 @@ jobs:
           tauriScript: npx tauri
           args: --target ${{ matrix.target }}
 
+      - name: Zip macOS DMG
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          find src-tauri/target/${{ matrix.target }}/release/bundle/dmg -name "*.dmg" -type f -exec sh -c 'zip -j "${1}.zip" "$1"' _ {} \;
+
+      - name: Upload macOS DMG Zip
+        if: runner.os == 'macOS'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg.zip
+
       - name: Generate and Upload Checksums
         shell: bash
         run: |
-          find src-tauri/target/${{ matrix.target }}/release/bundle -type f \( -name "*.dmg" -o -name "*.exe" -o -name "*.msi" \) -exec sh -c 'if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" > "$1.sha256"; else shasum -a 256 "$1" > "$1.sha256"; fi' _ {} \;
+          find src-tauri/target/${{ matrix.target }}/release/bundle -type f \( -name "*.dmg" -o -name "*.dmg.zip" -o -name "*.exe" -o -name "*.msi" \) -exec sh -c 'if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" > "$1.sha256"; else shasum -a 256 "$1" > "$1.sha256"; fi' _ {} \;
         
       - name: Upload Desktop Checksums
         uses: softprops/action-gh-release@v2
