@@ -7,6 +7,16 @@ This is a modified fork of the original poweranalyses.org web application. The c
 > DO NOT CONTACT THE ORIGINAL DEVELOPER FOR ANY ISSUES REGARDING TO THIS FORK.
 > If you have any issues with this fork, please submit a pull request on this repository.
 
+## macOS Installation
+
+macOS may display a warning that the app "is damaged and can't be opened" because the app is not signed with an Apple Developer certificate. To resolve this, either:
+
+1. **Download the `.dmg.zip`** from the [Releases](../../releases) page instead of the raw `.dmg`. Extracting the zip removes the quarantine flag.
+2. Or **remove the quarantine attribute manually** after mounting the `.dmg`:
+   ```sh
+   xattr -cr /Applications/poweranalyses.app
+   ```
+
 ## poweranalyses.org
 
 Developed by [Rik Huijzer](https://github.com/rikhuijzer), and repository available on [GitHub Organization Repo](https://github.com/tla-org/poweranalyses).
