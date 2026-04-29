@@ -1,4 +1,4 @@
-# PowerAnalyses for Local Environments
+# Open Power Analyses
 
 ## Important Note
 This is a modified fork of the original poweranalyses.org web application. The core application was created by the original developers, and this repository adapts it into a native macOS application using Tauri. These modifications were co-authored with the Gemini 3.1 Pro for personal use. In accordance with the GNU General Public License v2.0 (GPL-2.0), this modified version and its source code are distributed under the same license terms.
@@ -20,6 +20,8 @@ macOS may display a warning that the app "is damaged and can't be opened" becaus
    ```sh
    xattr -cr /Applications/poweranalyses.app
    ```
+
+---
 
 ## poweranalyses.org
 
@@ -62,6 +64,8 @@ Or use `cargo watch` to run the tests automatically when you make changes.
 ```sh
 $ cargo watch -x "test"
 ```
+
+---
 
 ### ✅ Completed Features
 - [ ] **Add Exact tests:** Add Fisher's exact test, etc.
