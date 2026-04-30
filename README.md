@@ -57,39 +57,9 @@ Statistical power analyses in the browser via R's nmath library and WebAssembly.
 
 The favicon is obtained from Flaticon (https://www.flaticon.com/free-icon/statistics_4064965).
 
-## Developer notes
-
-> **This work is a fork of the original poweranalyses.org web application. The core application was created by [Rik Huijzer](https://github.com/rikhuijzer), and repository available on [GitHub Organization Repo](https://github.com/tla-org/poweranalyses). Without their work, this project would not exist.**
-
-Going via emscripten because we link a C library.
-
-A big thanks to https://github.com/rustwasm/team/issues/291#issuecomment-644946504 for writing down how to build a C library to WebAssembly via Rust.
-
-For local development, checkout the `justfile`.
-
-To see the changes live, run
-```sh
-$ just serve
-```
-
-To only build the site, run
-```sh
-$ just build
-```
-
-To run the backend tests (Rust), run
-
-```sh
-$ cargo test
-```
-
-Or use `cargo watch` to run the tests automatically when you make changes.
-
-```sh
-$ cargo watch -x "test"
-```
-
 ---
+
+## Future Plans
 
 ### ✅ Completed Features
 - [ ] **Add Exact tests:** Add Fisher's exact test, etc.
