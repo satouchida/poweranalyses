@@ -13,13 +13,37 @@ I also added support for arm64 Windows machines (Snapdragon X series processor) 
 
 ## macOS Installation
 
-macOS may display a warning that the app "is damaged and can't be opened" because the app is not signed with an Apple Developer certificate, which costs 99 USD per year. To resolve this, either:
+macOS may display a warning that the app "is damaged and can't be opened" because the app is not signed with an Apple Developer certificate, which costs 99 USD per year. To resolve this:
 
-1. **Download the `.dmg.zip`** from the [Releases](../../releases) page instead of the raw `.dmg`. Extracting the zip removes the quarantine flag.
-2. Or **remove the quarantine attribute manually** after mounting the `.dmg`:
+- **remove the quarantine attribute manually** after mounting the `.dmg` and move the `poweranalyses.app` into `/User/Applications`:
    ```sh
-   xattr -cr /Applications/poweranalyses.app
+   xattr -cr /path/to/Applications/poweranalyses.app
    ```
+
+
+
+### If you are not familiar with those stuff, follow the guide below:
+  
+  <details open>
+     <summary>How to bypass "app is damaged" message</summary>
+     
+   1. **install the app as usual.**
+     
+        - it is similar to what you do to install zoom app.
+  
+   2. **Open Finder and go to Application folder.**
+        
+        - Usually you can find it under "Frequently used" on left pane.
+       
+   3. **Look at the bottom of the Finder. There is something like `Macintosh HD > Application`.**
+        
+   4. **Right click (or press Control key and click) the `Application` that you just found. Select `New Terminal at Folder`.**
+        
+   5. **Now, copy and paste `xattr -cr poweranalyses.app`. Press Enter key.**
+        
+   6. **You are all set!**
+ 
+  </details>
 
 ---
 
