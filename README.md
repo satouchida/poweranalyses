@@ -62,7 +62,6 @@ The favicon is obtained from Flaticon (https://www.flaticon.com/free-icon/statis
 ## Future Plans
 
 ### ✅ Completed Features
-- [ ] **Add Exact tests:** Add Fisher's exact test, etc.
 - [x] **Material 3 UI Migration:** Sleek, modern interface with consistent design tokens.
 - [x] **Interactive Power Curves:** Dynamic visualizations using Chart.js.
 - [x] **Monte Carlo Simulation:** Robust simulation engine for empirical power analysis.
@@ -70,8 +69,11 @@ The favicon is obtained from Flaticon (https://www.flaticon.com/free-icon/statis
 - [x] **Export & Reporting:** CSV/TSV export and "Copy Table" functionality.
 - [x] **Accessibility:** WCAG compliant structure and keyboard navigation.
 
-### 🟡 Future Plans (Medium/Low Priority)
+### 🟡 Future Plans
+- [ ] **Add Exact tests:** Add Fisher's exact test, etc.
+- [ ] **Advanced Models:** Support for multi-factor mixed models.
+- [ ] **F-Droid:** Publish Android app to F-Droid.
 - [ ] **Dark Mode & Theming:** Support for dark mode with system preference detection.
 - [ ] **Internationalization (i18n):** Multi-language support.
-- [ ] **Advanced Models:** Support for multi-factor mixed models.
+
 
