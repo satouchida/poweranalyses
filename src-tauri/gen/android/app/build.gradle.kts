@@ -54,7 +54,9 @@ android {
             }
         }
         getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
+            if (keystoreProperties.containsKey("storeFile")) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             isMinifyEnabled = true
             proguardFiles(
                 *fileTree(".") { include("**/*.pro") }
